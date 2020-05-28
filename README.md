@@ -4,9 +4,10 @@ This module is developed by [OrviSoft](https://orvisoft.com/contact)
 
 `orvisoft/module-relatedcategory`
 
--  [Main Functionalities](#header-main-functionalities)
--  [Installation](#header-installation)
--  [Attributes](#header-attributes)
+-  [Main Functionalities](#main-functionalities)
+-  [Installation](#installation)
+-  [Specifications](#specifications)
+-  [Attributes](#attributes)
 
 
 ## Main Functionalities
@@ -35,6 +36,14 @@ Add attribute to Magento category
 - enable the module by running `php bin/magento module:enable OrviSoft_RelatedCategory`
 - apply database updates by running `php bin/magento setup:upgrade`\*
 - Flush the cache by running `php bin/magento cache:flush`
+
+### Specifications
+
+ - Block
+	- Customers > customers.phtml
+
+ - Helper
+	- OrviSoft\RelatedCategory\Helper\Data
 
 ## Attributes
 
