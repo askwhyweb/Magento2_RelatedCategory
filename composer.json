@@ -1,0 +1,26 @@
+{
+    "name": "orvisoft/module-relatedcategory",
+    "description": "Add attribute to Magento category",
+    "type": "magento2-module",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "email": "info@mage2gen.com",
+            "name": "Mage2Gen"
+        },
+        {
+            "email": "farhan@orvisoft.com",
+            "name": "Farhan Islam"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "OrviSoft\\RelatedCategory\\": ""
+        }
+    }
+}
