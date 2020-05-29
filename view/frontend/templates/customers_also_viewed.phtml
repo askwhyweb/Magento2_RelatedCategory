@@ -2,153 +2,89 @@
 /**
  * @var $block \OrviSoft\RelatedCategory\Block\Customers
  */
-	$_product = $this->getProduct();
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$currencysymbol = $objectManager->get('Magento\Store\Model\StoreManagerInterface');
+$currencyCode = $currencysymbol->getStore()->getCurrentCurrencyCode();
+$currency =  $objectManager->create('Magento\Directory\Model\CurrencyFactory')->create()->load($currencyCode);
+$currencySymbol = $currency->getCurrencySymbol();
+	$product = $_product = $this->getProduct();
+	$categories = $_product->getCategoryIds();
+	$categoryid = false;
+	$_cats = array();
+	foreach ($categories as $category_id) {
+		//echo $category_id. '<br />';
+		$categoryid = $category_id;
+		//break 1;
+		// $_cats[] = $category_id;
+		$_cat = $this->getCategory($category_id) ;
+		if($_cat->getRelatedCategory()){
+			//$categoryid = $_cat->getRelatedCategory();
+			$_cats[] = $category_id;
+			//break 1;
+		}
+	}
+	if(!count($_cats)){
+		return;
+	}
+	$products = $this->getAlsoViewed($_cats, $_product->getFinalPrice());
+	if(!$products){
+		return;
+	}
+
+	$_category_config = $this->helper('Smartwave\Porto\Helper\Data')->getConfig('porto_settings/category');
+	$_imagehelper = $this->helper('Magento\Catalog\Helper\Image');
+	$image_width = ($_category_config['ratio_width'])?$_category_config['ratio_width']:300;
+	$image_height = ($_category_config['ratio_height'])?$_category_config['ratio_height']:300;
+	$image = 'category_page_list';
+    if($_category_config['aspect_ratio'])
+        $image_height = $image_width;
 ?>
-<div>
-	<!-- <?= $block->getAlsoViewed() ?> -->
-	<!-- <?= __('Hello OrviSoft_RelatedCategory::customers_also_viewed.phtml') ?> -->
-</div>
+
 <div class="more-products-option">
 <h3><strong>Customers Also Viewed</strong></h3>
    <ul class="row owl-carousel">
+   <?php foreach($products as $_product): ?>
       <li class="item product product-item">
          <div class="product-item-info" data-container="product-grid">
             <div class="product photo product-item-photo">
-               <a class="product-image" href="/" tabindex="-1">
+               <a class="product-image" href="<?php $_product->getProductUrl(); ?>" tabindex="-1">
                <span class="babyfoots-media-container product-list-promo-container">
-               <img class="product-image-photo default_image porto-lazyload porto-lazyload-loaded" data-src="https://dev.fivetech.co.uk/pub/media/catalog/product/cache/0eba8f40f2f2d3c163a23e49371f3f0c/b/c/bcfa9232c86bb9956a4cc1cdc165083f_3.jpg" width="250" height="250" src="https://dev.fivetech.co.uk/pub/media/catalog/product/cache/0eba8f40f2f2d3c163a23e49371f3f0c/b/c/bcfa9232c86bb9956a4cc1cdc165083f_3.jpg" style="display: block;">
+			   <?php
+				$productImage = $_imagehelper->init($_product, $image)->resize($image_width, $image_height);
+				$productImageUrl = $productImage->getUrl();
+			   ?>
+               <img class="product-image-photo default_image porto-lazyload porto-lazyload-loaded" src="<?php echo $productImageUrl; ?>" data-src="<?php echo $productImageUrl; ?>" width="<?php echo $image_height; ?>" height="<?php echo $image_height; ?>" style="display: block;">
                </span>
                </a>
             </div>
             <div class="product details product-item-details">
                <div class="product description product-item-description">
-                  <ul class="listing-short-description homepage">
-                     <li>AMD Ryzen  , 2.30 GHz Processor</li>
-                     <li>14 in  , 1920 x 1080</li>
-                     <li>8 GB RAM  , 256GB SSD </li>
-                     <li>Integrated/On-Board Graphics</li>
-                     <li>Windows 10  , Starter</li>
-                  </ul>
-                  
+				  <ul class="listing-short-description homepage">
+					<?php if(strlen($_product->getData('processor_type')) || $_product->getData('processor_speed')): ?>
+					<li><?php echo (strlen($_product->getData('processor_type')) >0 ? $_product->getResource()->getAttribute('processor_type')->getFrontend()->getValue($_product) : ''); ?> <?php echo (strlen($_product->getData('processor_speed')) >0 ? ' , '.$_product->getResource()->getAttribute('processor_speed')->getFrontend()->getValue($_product): ''); ?> Processor</li>
+					<?php endif; ?>
+					<?php if(strlen($_product->getData('screen_size')) || $_product->getData('maximum_resolution')): ?>
+					<li><?php echo (strlen($_product->getData('screen_size')) >0 ? $_product->getResource()->getAttribute('screen_size')->getFrontend()->getValue($_product) : ''); ?> <?php echo (strlen($_product->getData('maximum_resolution')) >0 ? ' , '.$_product->getResource()->getAttribute('maximum_resolution')->getFrontend()->getValue($_product): ''); ?></li>
+					<?php endif; ?>
+					<?php if(strlen($_product->getData('ram_size')) || $_product->getData('ssd_capacity') || $_product->getData('hard_drive_capacity')): ?>
+					<li><?php echo (strlen($_product->getData('ram_size')) >0 ? $_product->getData('ram_size').' RAM' : ''); ?> <?php echo (strlen($_product->getData('ssd_capacity')) >0 ? ' , '.$_product->getResource()->getAttribute('ssd_capacity')->getFrontend()->getValue($_product).' SSD' : ''); ?> <?php echo (strlen($_product->getData('hard_drive_capacity')) >0 ? ' , '.$_product->getResource()->getAttribute('hard_drive_capacity')->getFrontend()->getValue($_product).' HDD': ''); ?></li>
+					<?php endif; ?>
+					<?php if(strlen($_product->getData('graphics_processing_type'))): ?>
+					<li><?php echo (strlen($_product->getData('graphics_processing_type')) >0 ? $_product->getResource()->getAttribute('graphics_processing_type')->getFrontend()->getValue($_product) : ''); ?></li>
+					<?php endif; ?>
+
+					<?php if(strlen($_product->getData('operating_system')) || $_product->getData('operating_system_edition')): ?>
+					<li><?php echo (strlen($_product->getData('operating_system')) >0 ? $_product->getResource()->getAttribute('operating_system')->getFrontend()->getValue($_product) : ''); ?> <?php echo (strlen($_product->getData('operating_system_edition')) >0 ? ' , '.$_product->getResource()->getAttribute('operating_system_edition')->getFrontend()->getValue($_product): ''); ?></li>
+					<?php endif; ?>
+				</ul>
                </div>
-               <div class="price-box price-final_price" data-role="priceBox" data-product-id="7965" data-price-box="product-id-7965">
-                  <span class="special-price">
-                  <span class="price-container price-final_price tax weee">
-                  <span class="price-label">Now</span>
-                  <span id="product-price-7965" data-price-amount="559.99" data-price-type="finalPrice" class="price-wrapper "><span class="price">£459.99</span></span>
-                  </span>
-                  </span>
-                  <span class="save-was-price">
-                  <span class="old-price">
-                  <span class="price-container price-final_price tax weee">
-                  <span class="price-label">Was</span>
-                  <span id="old-price-7965" data-price-amount="649.99" data-price-type="oldPrice" class="price-wrapper "><span class="price">£549.99</span></span>
-                  </span>
-                  </span>
-                  <span class="slash">/</span>
-                  <span class="save-price">
-                  <span class="price-container price-save_price">
-                  <span class="price-label">Save</span>
-                  <span id="save-price" data-price-amount="90" data-price-type="savePrice" class="price-wrapper "><span class="price">£90</span></span>
-                  </span>
-                  </span>
-                  </span>
-               </div>
+			   <?php //buggy method //echo $this->getLayout()->createBlock('OrviSoft\AddonProducts\Block\Home')->getProductPrice($_product) ?>
+			   <div class="price-box price-final_price"><?php echo $currencySymbol . ' ' . round($_product->getFinalPrice(), 2); ?></div>
             </div>
          </div>
       </li>
-	  <li class="item product product-item">
-         <div class="product-item-info" data-container="product-grid">
-            <div class="product photo product-item-photo">
-               <a class="product-image" href="/" tabindex="-1">
-               <span class="babyfoots-media-container product-list-promo-container">
-               <img class="product-image-photo default_image porto-lazyload porto-lazyload-loaded" data-src="https://dev.fivetech.co.uk/pub/media/catalog/product/cache/0eba8f40f2f2d3c163a23e49371f3f0c/2/1/210974244b919ce9400666f6def1c08b_1.jpg" width="250" height="250" src="https://dev.fivetech.co.uk/pub/media/catalog/product/cache/0eba8f40f2f2d3c163a23e49371f3f0c/2/1/210974244b919ce9400666f6def1c08b_1.jpg" style="display: block;">
-               </span>
-               </a>
-            </div>
-            <div class="product details product-item-details">
-               <div class="product description product-item-description">
-                  <ul class="listing-short-description homepage">
-                     <li>AMD Ryzen  , 2.30 GHz Processor</li>
-                     <li>14 in  , 1920 x 1080</li>
-                     <li>8 GB RAM  , 512GB SSD </li>
-                     <li>Integrated/On-Board Graphics</li>
-                     <li>Windows 10  , Starter</li>
-                  </ul>
-                  
-               </div>
-               <div class="price-box price-final_price" data-role="priceBox" data-product-id="7965" data-price-box="product-id-7965">
-                  <span class="special-price">
-                  <span class="price-container price-final_price tax weee">
-                  <span class="price-label">Now</span>
-                  <span id="product-price-7965" data-price-amount="559.99" data-price-type="finalPrice" class="price-wrapper "><span class="price">£559.99</span></span>
-                  </span>
-                  </span>
-                  <span class="save-was-price">
-                  <span class="old-price">
-                  <span class="price-container price-final_price tax weee">
-                  <span class="price-label">Was</span>
-                  <span id="old-price-7965" data-price-amount="649.99" data-price-type="oldPrice" class="price-wrapper "><span class="price">£649.99</span></span>
-                  </span>
-                  </span>
-                  <span class="slash">/</span>
-                  <span class="save-price">
-                  <span class="price-container price-save_price">
-                  <span class="price-label">Save</span>
-                  <span id="save-price" data-price-amount="90" data-price-type="savePrice" class="price-wrapper "><span class="price">£90</span></span>
-                  </span>
-                  </span>
-                  </span>
-               </div>
-            </div>
-         </div>
-      </li>
-	  <li class="item product product-item">
-         <div class="product-item-info" data-container="product-grid">
-            <div class="product photo product-item-photo">
-               <a class="product-image" href="/" tabindex="-1">
-               <span class="babyfoots-media-container product-list-promo-container">
-               <img class="product-image-photo default_image porto-lazyload porto-lazyload-loaded" data-src="https://dev.fivetech.co.uk/pub/media/catalog/product/cache/0eba8f40f2f2d3c163a23e49371f3f0c/5/9/597a6fee93f42c65b756f63413cd742b_1.jpg" width="250" height="250" src="https://dev.fivetech.co.uk/pub/media/catalog/product/cache/0eba8f40f2f2d3c163a23e49371f3f0c/5/9/597a6fee93f42c65b756f63413cd742b_1.jpg" style="display: block;">
-               </span>
-               </a>
-            </div>
-            <div class="product details product-item-details">
-               <div class="product description product-item-description">
-                  <ul class="listing-short-description homepage">
-                     <li>Intel Core i7 , 2.60 GHz Processor</li>
-                     <li>15.6 in  , 1920 x 1080</li>
-                     <li>16 GB RAM  , 512GB SSD </li>
-                     <li>Integrated/On-Board Graphics</li>
-                     <li>Windows 10  , Starter</li>
-                  </ul>
-                  
-               </div>
-               <div class="price-box price-final_price" data-role="priceBox" data-product-id="7965" data-price-box="product-id-7965">
-                  <span class="special-price">
-                  <span class="price-container price-final_price tax weee">
-                  <span class="price-label">Now</span>
-                  <span id="product-price-7965" data-price-amount="559.99" data-price-type="finalPrice" class="price-wrapper "><span class="price">£759.99</span></span>
-                  </span>
-                  </span>
-                  <span class="save-was-price">
-                  <span class="old-price">
-                  <span class="price-container price-final_price tax weee">
-                  <span class="price-label">Was</span>
-                  <span id="old-price-7965" data-price-amount="649.99" data-price-type="oldPrice" class="price-wrapper "><span class="price">£849.99</span></span>
-                  </span>
-                  </span>
-                  <span class="slash">/</span>
-                  <span class="save-price">
-                  <span class="price-container price-save_price">
-                  <span class="price-label">Save</span>
-                  <span id="save-price" data-price-amount="90" data-price-type="savePrice" class="price-wrapper "><span class="price">£90</span></span>
-                  </span>
-                  </span>
-                  </span>
-               </div>
-            </div>
-         </div>
-      </li>
+	<?php endforeach; ?>
+	  
    </ul>
    <script type="text/javascript">
 		require([
