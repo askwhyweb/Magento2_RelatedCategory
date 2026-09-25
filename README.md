@@ -1,50 +1,24 @@
-This module is developed by [OrviSoft](https://orvisoft.com/contact)
+# Magento 2 Related Category Attribute
 
-# Mage2 Module OrviSoft RelatedCategory
+> Historical project, last updated in 2020. The commit history describes the initial module structure as incomplete. It is not actively maintained; review compatibility and security before use.
 
-`orvisoft/module-relatedcategory`
+This module adds a `related_category` ID attribute to Magento categories. The original package and module names are `orvisoft/module-relatedcategory` and `OrviSoft_RelatedCategory`.
 
--  [Main Functionalities](#main-functionalities)
--  [Installation](#installation)
--  [Specifications](#specifications)
--  [Attributes](#attributes)
-
-
-## Main Functionalities
-
-Add attribute to Magento category
-  
 ## Installation
 
-\* = in production please use the `--keep-generated` option  
+For a local module copy, place the files in `app/code/OrviSoft/RelatedCategory`, then enable and register it:
 
-### Type 1: Zip file
+```bash
+php bin/magento module:enable OrviSoft_RelatedCategory
+php bin/magento setup:upgrade
+```
 
-- Unzip the zip file in `app/code/OrviSoft`
-- Enable the module by running `php bin/magento module:enable OrviSoft_RelatedCategory`
-- Apply database updates by running `php bin/magento setup:upgrade`\*
-- Flush the cache by running `php bin/magento cache:flush`
+For Composer, make the package available in your configured repository, then run:
 
-### Type 2: Composer
+```bash
+composer require orvisoft/module-relatedcategory
+php bin/magento module:enable OrviSoft_RelatedCategory
+php bin/magento setup:upgrade
+```
 
-- Make the module available in a composer repository for example:
-- private repository `repo.magento.com`
-- public repository `packagist.org`
-- public github repository as vcs
-- Add the composer repository to the configuration by running `composer config repositories.repo.magento.com composer https://repo.magento.com/`
-- Install the module composer by running `composer require orvisoft/module-relatedcategory`
-- enable the module by running `php bin/magento module:enable OrviSoft_RelatedCategory`
-- apply database updates by running `php bin/magento setup:upgrade`\*
-- Flush the cache by running `php bin/magento cache:flush`
-
-### Specifications
-
- - Block
-	- Customers > customers.phtml
-
- - Helper
-	- OrviSoft\RelatedCategory\Helper\Data
-
-## Attributes
-
-- Category - Related Category ID (related_category)
+The module includes a helper and a block/template integration documented in the source tree. No Magento version compatibility is asserted here.
